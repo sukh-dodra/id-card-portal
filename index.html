@@ -269,22 +269,31 @@
     }
 
     // TICKET SYSTEM SCRIPT
-    function submitTicket(e) {
-      e.preventDefault();
-      const btn = document.getElementById('t-btn');
-      btn.innerText = "Sending...";
-      btn.style.background = "#ccc";
-      
-      // Here you will add your Google Web App URL later
-      const webAppUrl = "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE"; 
-      
-      /* Dummy simulation for now until you link Google Sheet */
-      setTimeout(() => {
-        alert("ਤੁਹਾਡੀ ਟਿਕਟ ਦਰਜ ਹੋ ਗਈ ਹੈ! ਜਲਦੀ ਹੀ ਸੰਪਰਕ ਕੀਤਾ ਜਾਵੇਗਾ।");
-        document.getElementById('ticket-form').reset();
-        btn.innerText = "Send Message ➔";
-        btn.style.background = "#856404";
-      }, 1000);
+function submitTicket(e) {
+  e.preventDefault();
+  const btn = document.getElementById('t-btn');
+  btn.innerText = "Sending...";
+  btn.style.background = "#ccc";
+  
+  const id = document.getElementById('t-id').value;
+  const msg = document.getElementById('t-msg').value;
+  
+  // ਇੱਥੇ ਆਪਣਾ ਕਾਪੀ ਕੀਤਾ Web App URL ਪੇਸਟ ਕਰੋ
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbx9mOC1keyfm6I4Z0tYeKD205rzXWwfIZuWimCjNl0V/dev"; 
+  
+  fetch(webAppUrl, {
+    method: 'POST',
+    body: new URLSearchParams({ 'id': id, 'msg': msg })
+  }).then(res => {
+    alert("ਤੁਹਾਡੀ ਟਿਕਟ ਦਰਜ ਹੋ ਗਈ ਹੈ! ਜਲਦੀ ਹੀ ਸੰਪਰਕ ਕੀਤਾ ਜਾਵੇਗਾ।");
+    document.getElementById('ticket-form').reset();
+    btn.innerText = "Send Message ➔";
+    btn.style.background = "#856404";
+  }).catch(err => {
+    alert("ਕੋਈ ਤਕਨੀਕੀ ਗਲਤੀ ਆਈ ਹੈ।");
+    btn.innerText = "Send Message ➔";
+  });
+}
     }
   </script>
 </body>
