@@ -2,144 +2,137 @@
 <html lang="pa">
 <head>
   <meta charset="UTF-8">
-  <title>ID Card Print Portal</title>
+  <title>ID Card Pro Portal</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; gap: 20px; height: 100vh; box-sizing: border-box; overflow: hidden; }
+    /* Modern Premium UI Variables */
+    :root { --primary: #1e3a8a; --secondary: #f8f9fa; --accent: #28a745; --text: #333; --border: #e0e0e0; --shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 15px; display: flex; gap: 15px; height: 100vh; box-sizing: border-box; overflow: hidden; user-select: none; }
     
-    /* Left Panel - Controls */
-    .controls { width: 35%; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: 100%; overflow-y: auto; box-sizing: border-box; }
-    h2 { margin-top: 0; color: #0056b3; font-size: 20px; display: flex; justify-content: space-between; align-items: center; }
-    .setup-box { background: #e7f5ff; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #a5d8ff; font-weight: bold; }
-    .setup-box select { padding: 5px; font-size: 14px; border-radius: 4px; margin-left: 10px; cursor: pointer; }
-
-    /* Card Blocks */
-    .card-upload-block { border: 2px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #f8f9fa; display: none; }
-    .card-upload-block.active { display: block; }
-    .card-title { margin: 0 0 12px 0; color: #1c7ed6; font-size: 16px; border-bottom: 2px solid #1c7ed6; padding-bottom: 4px; }
-    .upload-row { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #eee; }
-    .upload-row label { font-size: 13px; font-weight: bold; color: #495057; display: flex; justify-content: space-between; align-items: center; }
-    .action-row { display: flex; gap: 10px; align-items: center; }
-    .action-row input[type="file"] { font-size: 13px; padding: 5px; border: 1px dashed #adb5bd; background: #fdfdfd; cursor: pointer; width: 75%; }
-    .btn-clear { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; width: 25%; }
-    .status-msg { color: #28a745; font-size: 12px; font-weight: bold; display: none; }
+    /* Left Panel - Premium Look */
+    .sidebar { width: 350px; background: white; padding: 20px; border-radius: 12px; box-shadow: var(--shadow); height: 100%; overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; }
+    .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
+    .header h2 { margin: 0; color: var(--primary); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
+    .header p { margin: 5px 0 0; font-size: 12px; color: #666; font-weight: bold; }
     
-    .btn-next { background: #17a2b8; color: white; border: none; padding: 10px; width: 100%; margin-top: 5px; border-radius: 4px; cursor: pointer; font-weight: bold; display: none; }
-    .btn-print { background-color: #28a745; color: white; padding: 12px; font-size: 16px; width: 100%; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    .setup-box { background: var(--secondary); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; }
+    .setup-box label { font-weight: bold; color: var(--text); display: block; margin-bottom: 8px; font-size: 14px; }
+    .setup-box select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; cursor: pointer; outline: none; }
 
-    /* Pop-up Cropper Modal */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: white; width: 95%; max-width: 1000px; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
-    .modal-header { background: #343a40; color: white; padding: 12px 15px; font-size: 18px; display: flex; justify-content: space-between; align-items: center; }
-    .crop-toolbar { background: #e9ecef; padding: 8px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #ccc; flex-wrap: wrap; }
-    .tool-btn { background: #fff; border: 1px solid #ced4da; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; color: #495057; }
+    .card-block { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; display: none; transition: 0.3s; }
+    .card-block.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .card-block h4 { margin: 0 0 15px 0; color: var(--primary); font-size: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
+    
+    .file-group { margin-bottom: 15px; background: #fdfdfd; border: 1px solid #eee; padding: 10px; border-radius: 6px;}
+    .file-group label { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #555; }
+    .file-actions { display: flex; gap: 8px; }
+    .file-actions input[type="file"] { flex: 1; padding: 6px; border: 1px dashed #adb5bd; border-radius: 4px; font-size: 11px; cursor: pointer; background: #fff; }
+    .btn-clear { background: #dc3545; color: white; border: none; padding: 0 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+    .status-badge { font-size: 10px; padding: 3px 8px; border-radius: 12px; background: #e2e3e5; color: #383d41; }
+    .status-badge.success { background: #d4edda; color: #155724; }
+
+    .btn-next { background: #17a2b8; color: white; border: none; padding: 12px; width: 100%; margin-top: 5px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; transition: 0.3s;}
+    .btn-next:hover { background: #138496; }
+    .btn-print { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); transition: 0.3s;}
+    .btn-print:hover { background: #218838; transform: translateY(-2px); }
+
+    /* Help & Ticket System UI */
+    .ticket-box { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin-top: auto; }
+    .ticket-box h4 { margin: 0 0 10px 0; color: #856404; font-size: 14px; }
+    .ticket-box input, .ticket-box textarea { width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; font-family: inherit;}
+    .ticket-box button { background: #856404; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px;}
+
+    /* Right Panel - A4 Preview */
+    .preview-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; background: #dcdcdc; border-radius: 12px; box-shadow: inset 0 4px 10px rgba(0,0,0,0.05); }
+    .a4-sheet { width: 210mm; height: 297mm; background: white; padding: 8mm 12mm; box-shadow: 0 5px 20px rgba(0,0,0,0.15); box-sizing: border-box; display: flex; flex-direction: column; gap: 3.5mm; flex-shrink: 0; border: 1px solid #ccc; }
+    .a4-row { display: flex; gap: 8mm; justify-content: center; height: 53.98mm; }
+    .id-card { width: 85.6mm; height: 53.98mm; border: 1px dashed #aaa; position: relative; box-sizing: border-box; background: transparent; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .id-card img { width: 100% !important; height: 100% !important; object-fit: fill !important; position: relative; z-index: 2; pointer-events: none;}
+    
+    /* Modal Controls */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; }
+    .modal-box { background: white; width: 95%; max-width: 1000px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .modal-head { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; }
+    .toolbar { background: #f8f9fa; padding: 10px 20px; border-bottom: 1px solid #dee2e6; display: flex; gap: 10px; flex-wrap: wrap; }
+    .tool-btn { background: white; border: 1px solid #ced4da; padding: 8px 15px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; color: #495057; transition: 0.2s;}
     .tool-btn:hover { background: #e2e6ea; }
-    
-    .modal-body { display: flex; padding: 15px; gap: 15px; background: #f4f6f9; height: 60vh; }
-    .cropper-area { width: 65%; background: #000; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-    .cropper-area img { max-width: 100%; max-height: 100%; display: block; }
-    
-    .editor-tools { width: 35%; background: white; padding: 15px; border-radius: 6px; overflow-y: auto; border: 1px solid #ddd; }
-    .slider-container { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
-    .slider-label { display: flex; justify-content: space-between; font-size: 12px; color: #444; font-weight: bold; }
-    .control-slider { width: 100%; cursor: pointer; }
-    .bg-options-section { margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px; font-size: 13px; }
-    .bg-options label { display: block; margin-top: 5px; cursor: pointer; }
-    .color-shades { display: flex; gap: 5px; margin-top: 5px; }
-    .shade-box { width: 20px; height: 20px; border-radius: 3px; cursor: pointer; border: 1px solid #aaa; }
-    .shade-box.active { border: 2px solid #000; }
-
-    .modal-footer { padding: 12px 15px; background: #e9ecef; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #dee2e6; }
-    .modal-btn { padding: 8px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
-    .btn-cancel { background: #6c757d; color: white; }
-    .btn-save { background: #007bff; color: white; }
-
-    /* Right Side - A4 Preview with Scroll */
-    .preview-panel { width: 65%; background: #e9ecef; padding: 20px; border-radius: 8px; box-shadow: inset 0 4px 10px rgba(0,0,0,0.05); display: flex; justify-content: center; overflow-y: auto; height: 100%; box-sizing: border-box; }
-    .a4-page { width: 210mm; height: 297mm; padding: 8mm 12mm; margin: 0 auto; background: white; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box; flex-shrink: 0; }
-    .cards-container { display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; height: 100%; }
-    .card-row { display: flex; gap: 6px; justify-content: center; align-items: center; height: 53.98mm; page-break-inside: avoid; }
-    .output-card { width: 85.6mm; height: 53.98mm; border: 1px solid #000; box-sizing: border-box; overflow: hidden; display: flex; justify-content: center; align-items: center; background: transparent; position: relative; }
-    .card-bg-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
-    
-    /* Strict Image Fill / Stretch */
-    .output-card img { width: 100% !important; height: 100% !important; object-fit: fill !important; position: relative; z-index: 2; }
+    .modal-body { display: flex; height: 55vh; }
+    .crop-container { width: 65%; background: #111; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .crop-container img { max-width: 100%; max-height: 100%; display: block; }
+    .settings-panel { width: 35%; padding: 20px; background: white; overflow-y: auto; border-left: 1px solid #dee2e6; }
+    .slider-group { margin-bottom: 15px; }
+    .slider-group label { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 5px; }
+    .slider-group input { width: 100%; cursor: pointer; }
+    .modal-foot { padding: 15px 20px; background: #e9ecef; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px; }
+    .btn-save { background: var(--primary); color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
 
     @page { size: A4 portrait; margin: 0; }
     @media print {
       body { background: none; padding: 0; margin: 0; }
       body * { visibility: hidden; }
-      .a4-page, .a4-page * { visibility: visible; }
-      .a4-page { border: none; padding: 8mm 12mm; position: absolute; left: 0; top: 0; width: 210mm; height: 297mm; box-shadow: none; }
+      .a4-sheet, .a4-sheet * { visibility: visible; }
+      .a4-sheet { border: none; padding: 8mm 12mm; position: absolute; left: 0; top: 0; width: 210mm; height: 297mm; box-shadow: none; }
     }
   </style>
 </head>
-<body>
+<body oncontextmenu="return false"> <div class="sidebar">
+    <div class="header">
+      <h2>ID Card Pro</h2>
+      <p>Secure Print Portal</p>
+    </div>
 
-  <div class="controls">
-    <h2><span id="txt-title">ID Card Print Portal</span></h2>
-    <hr>
-    
     <div class="setup-box">
-      <span id="txt-how-many">ਕਿੰਨੇ ਆਈ.ਡੀ ਕਾਰਡ ਪ੍ਰਿੰਟ ਕਰਨੇ ਹਨ?</span>
-      <select id="card-count" onchange="buildUI()">
+      <label>ਕਿੰਨੇ ਆਈ.ਡੀ ਕਾਰਡ ਪ੍ਰਿੰਟ ਕਰਨੇ ਹਨ?</label>
+      <select id="card-count" onchange="buildInterface()">
         <option value="1">1 ਕਾਰਡ</option><option value="2">2 ਕਾਰਡ</option>
         <option value="3">3 ਕਾਰਡ</option><option value="4">4 ਕਾਰਡ</option><option value="5" selected>5 ਕਾਰਡ</option>
       </select>
     </div>
 
-    <div id="upload-container"></div>
+    <div id="dynamic-controls"></div>
+
     <button class="btn-print" onclick="window.print()">🖨️ ਪ੍ਰਿੰਟ ਕਰੋ (Print A4)</button>
+
+    <div class="ticket-box" style="margin-top: 20px;">
+      <h4>🎧 Help / Support Ticket</h4>
+      <form id="ticket-form" onsubmit="submitTicket(event)">
+        <input type="text" id="t-id" placeholder="ਤੁਹਾਡੀ ID ਜਾਂ ਨਾਮ" required>
+        <textarea id="t-msg" rows="2" placeholder="ਆਪਣੀ ਸਮੱਸਿਆ ਲਿਖੋ..." required></textarea>
+        <button type="submit" id="t-btn">Send Message ➔</button>
+      </form>
+    </div>
   </div>
 
-  <div class="preview-panel">
-    <div class="a4-page"><div class="cards-container" id="a4-container"></div></div>
-  </div>
+  <div class="preview-area"><div class="a4-sheet" id="a4-sheet"></div></div>
 
-  <div class="modal-overlay" id="crop-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span id="modal-title">ਫੋਟੋ ਐਡਿਟ ਕਰੋ (Crop & Adjust)</span>
-        <span style="cursor:pointer; font-size:20px;" onclick="closeModal()">✖</span>
+  <div class="modal" id="crop-modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <span>✂️ ਫੋਟੋ ਐਡਿਟ ਕਰੋ (Crop & Adjust)</span>
+        <button onclick="closeModal()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">×</button>
       </div>
       
-      <div class="crop-toolbar">
+      <div class="toolbar">
         <button class="tool-btn" onclick="if(cropper) cropper.zoom(0.1)">🔍 Zoom In (+)</button>
         <button class="tool-btn" onclick="if(cropper) cropper.zoom(-0.1)">🔍 Zoom Out (-)</button>
-        <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(NaN)" style="margin-left:auto; background:#e2e3e5;">📐 Free Crop (ਮਰਜ਼ੀ ਨਾਲ ਕੱਟੋ)</button>
-        <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(85.6/53.98)" style="background:#d4edda;">💳 ID Card Size</button>
+        <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(NaN)" style="margin-left:auto; background:#e2e3e5;">📐 Free Crop (ਮਰਜ਼ੀ ਨਾਲ)</button>
+        <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(85.6/53.98)" style="background:#d4edda; border-color:#c3e6cb;">💳 ID Card Size</button>
       </div>
 
       <div class="modal-body">
-        <div class="cropper-area"><img id="modal-img" src=""></div>
-        
-        <div class="editor-tools">
-          <div class="slider-container"><div class="slider-label"><span>ਰੋਟੇਟ ਐਂਗਲ:</span><span id="v-rot">0°</span></div><input type="range" id="sl-rot" class="control-slider" min="0" max="90" value="0" oninput="applyFilters()"></div>
-          <div class="slider-container"><div class="slider-label"><span>Brightness:</span><span id="v-bri">100%</span></div><input type="range" id="sl-bri" class="control-slider" min="50" max="150" value="100" oninput="applyFilters()"></div>
-          <div class="slider-container"><div class="slider-label"><span>Exposure:</span><span id="v-exp">100%</span></div><input type="range" id="sl-exp" class="control-slider" min="50" max="150" value="100" oninput="applyFilters()"></div>
-          <div class="slider-container"><div class="slider-label"><span>Contrast:</span><span id="v-con">100%</span></div><input type="range" id="sl-con" class="control-slider" min="50" max="150" value="100" oninput="applyFilters()"></div>
-          <div class="slider-container"><div class="slider-label"><span>Highlights:</span><span id="v-hil">100%</span></div><input type="range" id="sl-hil" class="control-slider" min="30" max="100" value="100" oninput="applyFilters()"></div>
-          
-          <div class="bg-options-section">
-            <strong>ਬੈਕਗਰਾਊਂਡ ਵਿਕਲਪ:</strong>
-            <div class="bg-options">
-              <label><input type="radio" name="bg-mode" value="normal" checked onchange="changeBg()"> Normal Mode</label>
-              <label><input type="radio" name="bg-mode" value="blur" onchange="changeBg()"> Blur Background</label>
-              <label><input type="radio" name="bg-mode" value="remove" onchange="changeBg()"> Remove / Transparent</label>
-              <label><input type="radio" name="bg-mode" value="color" onchange="changeBg()"> Replace Color</label>
-              <div class="color-shades" id="modal-shades" style="display:none;">
-                <div class="shade-box active" style="background:#ffffff;" onclick="setCustomColor('#ffffff', this)"></div>
-                <div class="shade-box" style="background:#f0f4f8;" onclick="setCustomColor('#f0f4f8', this)"></div>
-                <input type="color" id="modal-cp" value="#ffffff" style="width:25px;height:22px;padding:0;cursor:pointer;" oninput="setCustomColor(this.value, null)">
-              </div>
-            </div>
-          </div>
-          <button class="tool-btn" style="width:100%; margin-top:15px; font-size:12px; padding:8px;" onclick="resetSliders()">ਰੀਸੈੱਟ ਫਿਲਟਰ (Reset Filters)</button>
+        <div class="crop-container"><img id="image-workspace" src=""></div>
+        <div class="settings-panel">
+          <div class="slider-group"><label>Rotate <span id="v-rot">0°</span></label><input type="range" id="sl-rot" min="0" max="90" value="0" oninput="applyFilters()"></div>
+          <div class="slider-group"><label>Brightness <span id="v-bri">100%</span></label><input type="range" id="sl-bri" min="50" max="150" value="100" oninput="applyFilters()"></div>
+          <div class="slider-group"><label>Contrast <span id="v-con">100%</span></label><input type="range" id="sl-con" min="50" max="150" value="100" oninput="applyFilters()"></div>
+          <button class="tool-btn" style="width:100%; margin-top:10px;" onclick="resetFilters()">🔄 ਰੀਸੈੱਟ (Reset)</button>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="modal-btn btn-cancel" onclick="closeModal()">ਰੱਦ ਕਰੋ (Cancel)</button>
-        <button class="modal-btn btn-save" onclick="saveCrop()">ਸੇਵ ਕਰੋ (Submit Crop)</button>
+
+      <div class="modal-foot">
+        <button class="btn-cancel tool-btn" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" onclick="saveCroppedImage()">✅ Save & Apply</button>
       </div>
     </div>
   </div>
@@ -148,252 +141,151 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <script>
-    // Initialize PDF.js Worker
-    if (window.pdfjsLib) {
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    // Disable drag on images
+    document.addEventListener('dragstart', function(e) { if(e.target.nodeName.toUpperCase() == "IMG") { e.preventDefault(); } });
+
+    // Initialize System
+    function initSystem() {
+      if(window['pdfjs-dist/build/pdf']) {
+        window.pdfjsLib = window['pdfjs-dist/build/pdf'];
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = ''; 
+      }
+      buildInterface();
     }
+    document.addEventListener("DOMContentLoaded", initSystem);
 
-    let cropper = null;
-    let currentKey = null;
-    let currentBgColor = 'transparent';
-    let cardStatus = {};
+    let cropper = null; let currentEditKey = null; let cardStatus = {};
 
-    function buildUI() {
-      const countSelect = document.getElementById('card-count');
-      if (!countSelect) return;
-      const count = parseInt(countSelect.value);
-      const leftPanel = document.getElementById('upload-container');
-      const rightPanel = document.getElementById('a4-container');
+    function buildInterface() {
+      const count = parseInt(document.getElementById('card-count').value || 5);
+      const controlsDiv = document.getElementById('dynamic-controls');
+      const a4Div = document.getElementById('a4-sheet');
       
-      leftPanel.innerHTML = '';
-      rightPanel.innerHTML = '';
-      cardStatus = {};
+      controlsDiv.innerHTML = ''; a4Div.innerHTML = ''; cardStatus = {};
 
       for (let i = 1; i <= count; i++) {
         const displayStyle = (i === 1) ? 'block' : 'none';
         
-        leftPanel.innerHTML += `
-          <div class="card-upload-block ${i===1?'active':''}" id="block-c${i}" style="display:${displayStyle};">
-            <h4 class="card-title">ਕਾਰਡ ਸੈੱਟ - ${i}</h4>
-            
-            <div class="upload-row">
-              <label>ਅਗਲਾ ਪਾਸਾ (Front): <span class="status-msg" id="status-c${i}-front">✔ Saved</span></label>
-              <div class="action-row">
-                <input type="file" id="file-c${i}-front" accept="image/*,application/pdf" onchange="processFile(event, 'c${i}-front')">
-                <button class="btn-clear" onclick="clearCard('c${i}-front')">Clear ✖</button>
-              </div>
+        controlsDiv.innerHTML += `
+          <div class="card-block ${i===1?'active':''}" id="block-${i}" style="display:${displayStyle};">
+            <h4>ਕਾਰਡ ਸੈੱਟ - ${i}</h4>
+            <div class="file-group"><label>ਅਗਲਾ ਪਾਸਾ (Front) <span class="status-badge" id="status-front-${i}">Pending</span></label>
+              <div class="file-actions"><input type="file" accept="image/*,application/pdf" id="input-front-${i}" onchange="processFile(event, 'front-${i}')"><button class="btn-clear" onclick="clearSlot('front-${i}')">✖</button></div>
             </div>
-            
-            <div class="upload-row">
-              <label>ਪਿਛਲਾ ਪਾਸਾ (Back): <span class="status-msg" id="status-c${i}-back">✔ Saved</span></label>
-              <div class="action-row">
-                <input type="file" id="file-c${i}-back" accept="image/*,application/pdf" onchange="processFile(event, 'c${i}-back')">
-                <button class="btn-clear" onclick="clearCard('c${i}-back')">Clear ✖</button>
-              </div>
+            <div class="file-group"><label>ਪਿਛਲਾ ਪਾਸਾ (Back) <span class="status-badge" id="status-back-${i}">Pending</span></label>
+              <div class="file-actions"><input type="file" accept="image/*,application/pdf" id="input-back-${i}" onchange="processFile(event, 'back-${i}')"><button class="btn-clear" onclick="clearSlot('back-${i}')">✖</button></div>
             </div>
-
-            ${i < count ? `<button class="btn-next" id="btn-next-${i}" onclick="nextStep(${i})">ਅਗਲਾ ਕਾਰਡ ਚੁਣੋ (Submit & Next) ➔</button>` : `<div style="text-align:center; color:#28a745; font-weight:bold; margin-top:10px; display:none;" id="final-msg">✓ ਸਾਰੇ ਕਾਰਡ ਮੁਕੰਮਲ ਹੋ ਗਏ ਹਨ! ਹੁਣ ਪ੍ਰਿੰਟ ਕਰੋ।</div>`}
+            ${i < count ? `<button class="btn-next" id="btn-next-${i}" onclick="nextStep(${i})">ਅਗਲਾ ਕਾਰਡ ਚੁਣੋ ➔</button>` : `<div style="text-align:center; color:#28a745; font-weight:bold; margin-top:10px; display:none;" id="final-msg">✓ ਸਾਰੇ ਕਾਰਡ ਮੁਕੰਮਲ!</div>`}
           </div>
         `;
 
-        rightPanel.innerHTML += `
-          <div class="card-row">
-            <div class="output-card">
-              <div class="card-bg-layer" id="bg-c${i}-front"></div>
-              <img id="out-c${i}-front" src="">
-            </div>
-            <div class="output-card">
-              <div class="card-bg-layer" id="bg-c${i}-back"></div>
-              <img id="out-c${i}-back" src="">
-            </div>
-          </div>
-        `;
+        a4Div.innerHTML += `<div class="a4-row"><div class="id-card"><img id="out-front-${i}" src=""></div><div class="id-card"><img id="out-back-${i}" src=""></div></div>`;
       }
     }
 
-    function nextStep(currentIndex) {
-      document.getElementById('block-c' + currentIndex).style.display = 'none';
-      const nextBlock = document.getElementById('block-c' + (currentIndex + 1));
-      if (nextBlock) nextBlock.style.display = 'block';
+    function nextStep(i) { document.getElementById('block-' + i).style.display = 'none'; if (document.getElementById('block-' + (i + 1))) document.getElementById('block-' + (i + 1)).style.display = 'block'; }
+
+    function clearSlot(key) {
+      document.getElementById('out-' + key).src = ""; document.getElementById('input-' + key).value = ""; 
+      const badge = document.getElementById('status-' + key); badge.innerText = "Pending"; badge.classList.remove('success');
+      cardStatus[key] = false; checkCompletion(key);
     }
 
-    function clearCard(key) {
-      document.getElementById('file-' + key).value = ""; 
-      document.getElementById('out-' + key).src = ""; 
-      document.getElementById('bg-' + key).style.background = 'transparent'; 
-      document.getElementById('status-' + key).style.display = 'none'; 
-      cardStatus[key] = false;
-      checkBtnStatus(key);
-    }
-
-    async function processFile(event, key) {
-      const file = event.target.files[0];
-      if (!file) return;
-      currentKey = key;
-
-      try {
-        if (file.type === "application/pdf") {
-          const arrayBuffer = await file.arrayBuffer();
-          await renderPDF(arrayBuffer, "");
-        } else {
-          const reader = new FileReader();
-          reader.onload = (e) => openModal(e.target.result);
-          reader.readAsDataURL(file);
-        }
-      } catch(err) {
-        alert("ਫਾਈਲ ਲੋਡ ਕਰਨ ਵਿੱਚ ਸਮੱਸਿਆ ਆਈ: " + err.message);
-      } finally {
-        event.target.value = ""; 
+    function processFile(event, key) {
+      const file = event.target.files[0]; if (!file) return; currentEditKey = key;
+      if (file.type === "application/pdf") {
+        const reader = new FileReader();
+        reader.onload = function(e) { renderPDF(new Uint8Array(e.target.result), ""); };
+        reader.readAsArrayBuffer(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = function(e) { openCropperModal(e.target.result); };
+        reader.readAsDataURL(file);
       }
+      event.target.value = ""; 
     }
 
-    async function renderPDF(arrayBuffer, passwordAttempt) {
-      try {
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer, password: passwordAttempt }).promise;
-        const page = await pdf.getPage(1);
-        const viewport = page.getViewport({ scale: 2.5 });
-        
-        const canvas = document.createElement('canvas');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        
-        await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
-        openModal(canvas.toDataURL('image/jpeg', 1.0));
-      } catch (err) {
-        if (err.name === "PasswordException") {
-          const pwd = prompt("🔒 ਇਹ PDF ਪਾਸਵਰਡ ਨਾਲ ਲਾਕ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪਾਸਵਰਡ ਭਰੋ:");
-          if (pwd) renderPDF(arrayBuffer, pwd);
-        } else {
-          alert("PDF Error: " + err.message);
-        }
-      }
+    function renderPDF(typedArray, password) {
+      if (typeof pdfjsLib === 'undefined') return;
+      pdfjsLib.getDocument({ data: typedArray, password: password }).promise.then(pdf => pdf.getPage(1)).then(page => {
+        const viewport = page.getViewport({ scale: 2.0 }); const canvas = document.createElement('canvas');
+        canvas.height = viewport.height; canvas.width = viewport.width;
+        return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise.then(() => openCropperModal(canvas.toDataURL('image/jpeg', 1.0)));
+      }).catch(err => {
+        if (err.name === "PasswordException") { const pwd = prompt("🔒 PDF ਪਾਸਵਰਡ ਭਰੋ:"); if (pwd) renderPDF(typedArray, pwd); } 
+        else alert("PDF Error: " + err.message);
+      });
     }
 
-    function openModal(imgSrc) {
-      const modal = document.getElementById('crop-modal');
-      const img = document.getElementById('modal-img');
-      img.src = imgSrc;
-      modal.style.display = 'flex';
-
-      if (cropper) { cropper.destroy(); cropper = null; }
-      resetSliders();
-
-      setTimeout(() => {
-        cropper = new Cropper(img, {
-          viewMode: 1, 
-          dragMode: 'move', 
-          autoCropArea: 0.9, 
-          zoomable: true,   
-          scalable: true,
-          responsive: true,
-          aspectRatio: 85.6/53.98,
-          ready: function() { applyFilters(); }
-        });
-      }, 100);
+    function openCropperModal(imgSrc) {
+      document.getElementById('crop-modal').style.display = 'flex';
+      const imgElem = document.getElementById('image-workspace'); imgElem.src = imgSrc;
+      if (cropper) cropper.destroy(); resetFilters();
+      setTimeout(() => { cropper = new Cropper(imgElem, { viewMode: 1, dragMode: 'move', aspectRatio: 85.6/53.98, autoCropArea: 0.9, zoomable: true, ready: applyFilters }); }, 150);
     }
 
-    function closeModal() {
-      document.getElementById('crop-modal').style.display = 'none';
-      if (cropper) { cropper.destroy(); cropper = null; }
-    }
+    function closeModal() { document.getElementById('crop-modal').style.display = 'none'; if (cropper) { cropper.destroy(); cropper = null; } }
 
-    function resetSliders() {
-      document.getElementById('sl-rot').value = 0; document.getElementById('sl-bri').value = 100;
-      document.getElementById('sl-exp').value = 100; document.getElementById('sl-con').value = 100; document.getElementById('sl-hil').value = 100;
-      document.getElementsByName('bg-mode')[0].checked = true;
-      changeBg();
+    function resetFilters() {
+      document.getElementById('sl-rot').value = 0; document.getElementById('sl-bri').value = 100; document.getElementById('sl-con').value = 100;
       if(cropper) { cropper.rotateTo(0); applyFilters(); }
     }
 
     function applyFilters() {
       if(!cropper) return;
-      const rot = document.getElementById('sl-rot').value;
-      const bri = document.getElementById('sl-bri').value;
-      const exp = document.getElementById('sl-exp').value;
-      const con = document.getElementById('sl-con').value;
-      const hil = document.getElementById('sl-hil').value;
-
-      document.getElementById('v-rot').innerText = rot + "°"; document.getElementById('v-bri').innerText = bri + "%";
-      document.getElementById('v-exp').innerText = exp + "%"; document.getElementById('v-con').innerText = con + "%"; document.getElementById('v-hil').innerText = hil + "%";
-
+      const rot = document.getElementById('sl-rot').value, bri = document.getElementById('sl-bri').value, con = document.getElementById('sl-con').value;
+      document.getElementById('v-rot').innerText = rot + "°"; document.getElementById('v-bri').innerText = bri + "%"; document.getElementById('v-con').innerText = con + "%";
       cropper.rotateTo(rot);
-      
-      const simExp = exp / 100;
-      const filterStr = `brightness(${bri}%) contrast(${con}%) opacity(${hil}%) saturate(${simExp * 100}%)`;
-      
-      const cropperImages = document.querySelectorAll('.cropper-view-box img');
-      cropperImages.forEach(img => img.style.filter = filterStr);
+      const filterStr = `brightness(${bri}%) contrast(${con}%)`;
+      document.querySelectorAll('.cropper-view-box img').forEach(img => img.style.filter = filterStr);
     }
 
-    function changeBg() {
-      const mode = document.querySelector('input[name="bg-mode"]:checked').value;
-      const shades = document.getElementById('modal-shades');
-      shades.style.display = 'none';
-      if(mode === 'normal' || mode === 'color') currentBgColor = '#ffffff';
-      if(mode === 'blur' || mode === 'remove') currentBgColor = 'transparent';
-      if(mode === 'color') shades.style.display = 'flex';
-    }
-
-    function setCustomColor(color, el) {
-      currentBgColor = color;
-      document.querySelectorAll('#modal-shades .shade-box').forEach(s => s.classList.remove('active'));
-      if(el) el.classList.add('active');
-    }
-
-    function saveCrop() {
-      if (!cropper || !currentKey) return;
-      const canvas = cropper.getCroppedCanvas();
-      if (!canvas) return;
-
-      const outImg = document.getElementById('out-' + currentKey);
+    function saveCroppedImage() {
+      if (!cropper || !currentEditKey) return;
+      const canvas = cropper.getCroppedCanvas(); if (!canvas) return;
+      const outImg = document.getElementById('out-' + currentEditKey);
       outImg.src = canvas.toDataURL('image/jpeg', 1.0);
-
-      const bri = document.getElementById('sl-bri').value;
-      const exp = document.getElementById('sl-exp').value;
-      const con = document.getElementById('sl-con').value;
-      const hil = document.getElementById('sl-hil').value;
-      const simExp = exp / 100;
-      outImg.style.filter = `brightness(${bri}%) contrast(${con}%) opacity(${hil}%) saturate(${simExp * 100}%)`;
-
-      const mode = document.querySelector('input[name="bg-mode"]:checked').value;
-      const bgLayer = document.getElementById('bg-' + currentKey);
       
-      bgLayer.style.filter = 'none'; bgLayer.style.background = 'none';
-      if (mode === 'normal') bgLayer.style.background = '#ffffff';
-      else if (mode === 'blur') {
-        bgLayer.style.background = 'rgba(0,0,0,0.04)';
-        bgLayer.style.backdropFilter = 'blur(6px)';
-        bgLayer.style.webkitBackdropFilter = 'blur(6px)';
-      }
-      else if (mode === 'remove') bgLayer.style.background = 'transparent';
-      else if (mode === 'color') bgLayer.style.background = currentBgColor;
+      const bri = document.getElementById('sl-bri').value, con = document.getElementById('sl-con').value;
+      outImg.style.filter = `brightness(${bri}%) contrast(${con}%)`;
 
-      cardStatus[currentKey] = true;
-      document.getElementById('status-' + currentKey).style.display = 'inline-block';
-
-      checkBtnStatus(currentKey);
+      const badge = document.getElementById('status-' + currentEditKey);
+      badge.innerText = "✔ Saved"; badge.classList.add('success');
+      cardStatus[currentEditKey] = true; checkCompletion(currentEditKey);
       closeModal();
     }
 
-    function checkBtnStatus(key) {
-      const match = key.match(/c(\d+)-/);
+    function checkCompletion(key) {
+      const match = key.match(/-(.+)$/); 
       if (match) {
-        const cId = match[1];
-        const nxtBtn = document.getElementById('btn-next-' + cId);
-        const finalMsg = document.getElementById('final-msg');
-        
-        if (cardStatus[`c${cId}-front`] && cardStatus[`c${cId}-back`]) {
-          if (nxtBtn) nxtBtn.style.display = 'block';
-          else if(finalMsg) finalMsg.style.display = 'block';
+        const cId = match[1]; 
+        const nxtBtn = document.getElementById('btn-next-' + cId), finalMsg = document.getElementById('final-msg');
+        if (cardStatus[`front-${cId}`] && cardStatus[`back-${cId}`]) {
+          if (nxtBtn) nxtBtn.style.display = 'block'; else if(finalMsg) finalMsg.style.display = 'block';
         } else {
-          if (nxtBtn) nxtBtn.style.display = 'none';
-          else if(finalMsg) finalMsg.style.display = 'none';
+          if (nxtBtn) nxtBtn.style.display = 'none'; else if(finalMsg) finalMsg.style.display = 'none';
         }
       }
     }
 
-    // Direct initialisation to prevent iframe loading issues
-    buildUI();
+    // TICKET SYSTEM SCRIPT
+    function submitTicket(e) {
+      e.preventDefault();
+      const btn = document.getElementById('t-btn');
+      btn.innerText = "Sending...";
+      btn.style.background = "#ccc";
+      
+      // Here you will add your Google Web App URL later
+      const webAppUrl = "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE"; 
+      
+      /* Dummy simulation for now until you link Google Sheet */
+      setTimeout(() => {
+        alert("ਤੁਹਾਡੀ ਟਿਕਟ ਦਰਜ ਹੋ ਗਈ ਹੈ! ਜਲਦੀ ਹੀ ਸੰਪਰਕ ਕੀਤਾ ਜਾਵੇਗਾ।");
+        document.getElementById('ticket-form').reset();
+        btn.innerText = "Send Message ➔";
+        btn.style.background = "#856404";
+      }, 1000);
+    }
   </script>
 </body>
 </html>
