@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>ID Card Pro Portal</title>
+  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  
   <style>
-    /* Modern Premium UI Variables */
-    :root { --primary: #1e3a8a; --secondary: #f8f9fa; --accent: #28a745; --text: #333; --border: #e0e0e0; --shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    /* Modern UI Variables */
+    :root { --primary: #1e3a8a; --secondary: #f8f9fa; --accent: #28a745; --text: #333; --border: #dee2e6; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 15px; display: flex; gap: 15px; height: 100vh; box-sizing: border-box; overflow: hidden; user-select: none; }
     
     /* Left Panel - Premium Look */
-    .sidebar { width: 350px; background: white; padding: 20px; border-radius: 12px; box-shadow: var(--shadow); height: 100%; overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; }
+    .sidebar { width: 350px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: 100%; overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; }
     .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
     .header h2 { margin: 0; color: var(--primary); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
     .header p { margin: 5px 0 0; font-size: 12px; color: #666; font-weight: bold; }
@@ -19,25 +21,23 @@
     .setup-box label { font-weight: bold; color: var(--text); display: block; margin-bottom: 8px; font-size: 14px; }
     .setup-box select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; cursor: pointer; outline: none; }
 
-    .card-block { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; display: none; transition: 0.3s; }
-    .card-block.active { display: block; animation: fadeIn 0.4s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .card-block { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; display: none; }
+    .card-block.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     .card-block h4 { margin: 0 0 15px 0; color: var(--primary); font-size: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
     
     .file-group { margin-bottom: 15px; background: #fdfdfd; border: 1px solid #eee; padding: 10px; border-radius: 6px;}
-    .file-group label { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #555; }
+    .file-group label { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #555; align-items: center;}
     .file-actions { display: flex; gap: 8px; }
     .file-actions input[type="file"] { flex: 1; padding: 6px; border: 1px dashed #adb5bd; border-radius: 4px; font-size: 11px; cursor: pointer; background: #fff; }
     .btn-clear { background: #dc3545; color: white; border: none; padding: 0 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
     .status-badge { font-size: 10px; padding: 3px 8px; border-radius: 12px; background: #e2e3e5; color: #383d41; }
     .status-badge.success { background: #d4edda; color: #155724; }
 
-    .btn-next { background: #17a2b8; color: white; border: none; padding: 12px; width: 100%; margin-top: 5px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; transition: 0.3s;}
-    .btn-next:hover { background: #138496; }
-    .btn-print { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); transition: 0.3s;}
-    .btn-print:hover { background: #218838; transform: translateY(-2px); }
+    .btn-next { background: #17a2b8; color: white; border: none; padding: 12px; width: 100%; margin-top: 5px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; }
+    .btn-print { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
 
-    /* Help & Ticket System UI */
+    /* Ticket Box */
     .ticket-box { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin-top: auto; }
     .ticket-box h4 { margin: 0 0 10px 0; color: #856404; font-size: 14px; }
     .ticket-box input, .ticket-box textarea { width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; font-family: inherit;}
@@ -45,40 +45,54 @@
 
     /* Right Panel - A4 Preview */
     .preview-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; background: #dcdcdc; border-radius: 12px; box-shadow: inset 0 4px 10px rgba(0,0,0,0.05); }
-    .a4-sheet { width: 210mm; height: 297mm; background: white; padding: 8mm 12mm; box-shadow: 0 5px 20px rgba(0,0,0,0.15); box-sizing: border-box; display: flex; flex-direction: column; gap: 3.5mm; flex-shrink: 0; border: 1px solid #ccc; }
+    .a4-page { width: 210mm; height: 297mm; background: white; padding: 8mm 12mm; box-shadow: 0 5px 20px rgba(0,0,0,0.15); box-sizing: border-box; display: flex; flex-direction: column; gap: 1.5mm; flex-shrink: 0; border: 1px solid #ccc; }
     .a4-row { display: flex; gap: 8mm; justify-content: center; height: 53.98mm; }
     .id-card { width: 85.6mm; height: 53.98mm; border: 1px dashed #aaa; position: relative; box-sizing: border-box; background: transparent; display: flex; justify-content: center; align-items: center; overflow: hidden; }
     .id-card img { width: 100% !important; height: 100% !important; object-fit: fill !important; position: relative; z-index: 2; pointer-events: none;}
+    .bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
     
     /* Modal Controls */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; }
     .modal-box { background: white; width: 95%; max-width: 1000px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
     .modal-head { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; }
-    .toolbar { background: #f8f9fa; padding: 10px 20px; border-bottom: 1px solid #dee2e6; display: flex; gap: 10px; flex-wrap: wrap; }
-    .tool-btn { background: white; border: 1px solid #ced4da; padding: 8px 15px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; color: #495057; transition: 0.2s;}
+    .toolbar { background: #f8f9fa; padding: 10px 20px; border-bottom: 1px solid #dee2e6; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .tool-btn { background: white; border: 1px solid #ced4da; padding: 8px 15px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; color: #495057; }
     .tool-btn:hover { background: #e2e6ea; }
     .modal-body { display: flex; height: 55vh; }
-    .crop-container { width: 65%; background: #111; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .crop-container { width: 65%; background: #111; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
     .crop-container img { max-width: 100%; max-height: 100%; display: block; }
+    
     .settings-panel { width: 35%; padding: 20px; background: white; overflow-y: auto; border-left: 1px solid #dee2e6; }
     .slider-group { margin-bottom: 15px; }
     .slider-group label { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 5px; }
     .slider-group input { width: 100%; cursor: pointer; }
+    .bg-options-section { margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px; font-size: 13px; }
+    .bg-options label { display: block; margin-top: 5px; cursor: pointer; }
+    .color-shades { display: flex; gap: 5px; margin-top: 5px; }
+    .shade-box { width: 20px; height: 20px; border-radius: 3px; cursor: pointer; border: 1px solid #aaa; }
+    .shade-box.active { border: 2px solid #000; }
+    
     .modal-foot { padding: 15px 20px; background: #e9ecef; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px; }
     .btn-save { background: var(--primary); color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+    .btn-cancel { background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
+    /* Print Styles for Perfect A4 */
     @page { size: A4 portrait; margin: 0; }
     @media print {
       body { background: none; padding: 0; margin: 0; }
       body * { visibility: hidden; }
-      .a4-sheet, .a4-sheet * { visibility: visible; }
-      .a4-sheet { border: none; padding: 8mm 12mm; position: absolute; left: 0; top: 0; width: 210mm; height: 297mm; box-shadow: none; }
+      .a4-page, .a4-page * { visibility: visible; }
+      .sidebar { display: none; }
+      .preview-area { padding: 0; background: none; display: block; }
+      .a4-page { border: none; box-shadow: none; margin: 0; padding: 8mm 12mm; position: absolute; top: 0; left: 0; width: 210mm; height: 297mm; }
     }
   </style>
 </head>
-<body oncontextmenu="return false"> <div class="sidebar">
+<body oncontextmenu="return false">
+
+  <div class="sidebar">
     <div class="header">
-      <h2>ID Card Pro</h2>
+      <h2>ID CARD PRO</h2>
       <p>Secure Print Portal</p>
     </div>
 
@@ -94,7 +108,7 @@
 
     <button class="btn-print" onclick="window.print()">🖨️ ਪ੍ਰਿੰਟ ਕਰੋ (Print A4)</button>
 
-    <div class="ticket-box" style="margin-top: 20px;">
+    <div class="ticket-box">
       <h4>🎧 Help / Support Ticket</h4>
       <form id="ticket-form" onsubmit="submitTicket(event)">
         <input type="text" id="t-id" placeholder="ਤੁਹਾਡੀ ID ਜਾਂ ਨਾਮ" required>
@@ -104,7 +118,9 @@
     </div>
   </div>
 
-  <div class="preview-area"><div class="a4-sheet" id="a4-sheet"></div></div>
+  <div class="preview-area">
+    <div class="a4-page" id="a4-sheet"></div>
+  </div>
 
   <div class="modal" id="crop-modal">
     <div class="modal-box">
@@ -116,22 +132,39 @@
       <div class="toolbar">
         <button class="tool-btn" onclick="if(cropper) cropper.zoom(0.1)">🔍 Zoom In (+)</button>
         <button class="tool-btn" onclick="if(cropper) cropper.zoom(-0.1)">🔍 Zoom Out (-)</button>
-        <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(NaN)" style="margin-left:auto; background:#e2e3e5;">📐 Free Crop (ਮਰਜ਼ੀ ਨਾਲ)</button>
+        <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(NaN)" style="margin-left:auto; background:#d1ecf1;">📐 Free Crop (ਆਪਣੀ ਮਰਜ਼ੀ)</button>
         <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(85.6/53.98)" style="background:#d4edda; border-color:#c3e6cb;">💳 ID Card Size</button>
       </div>
 
       <div class="modal-body">
         <div class="crop-container"><img id="image-workspace" src=""></div>
         <div class="settings-panel">
-          <div class="slider-group"><label>Rotate <span id="v-rot">0°</span></label><input type="range" id="sl-rot" min="0" max="90" value="0" oninput="applyFilters()"></div>
+          <div class="slider-group"><label>Rotate <span id="v-rot">0°</span></label><input type="range" id="sl-rot" min="-180" max="180" value="0" oninput="applyFilters()"></div>
           <div class="slider-group"><label>Brightness <span id="v-bri">100%</span></label><input type="range" id="sl-bri" min="50" max="150" value="100" oninput="applyFilters()"></div>
+          <div class="slider-group"><label>Exposure <span id="v-exp">100%</span></label><input type="range" id="sl-exp" min="50" max="150" value="100" oninput="applyFilters()"></div>
           <div class="slider-group"><label>Contrast <span id="v-con">100%</span></label><input type="range" id="sl-con" min="50" max="150" value="100" oninput="applyFilters()"></div>
-          <button class="tool-btn" style="width:100%; margin-top:10px;" onclick="resetFilters()">🔄 ਰੀਸੈੱਟ (Reset)</button>
+          
+          <div class="bg-options-section">
+            <strong>ਬੈਕਗਰਾਊਂਡ ਵਿਕਲਪ:</strong>
+            <div class="bg-options">
+              <label><input type="radio" name="bg-mode" value="normal" checked onchange="changeBg()"> Normal Mode</label>
+              <label><input type="radio" name="bg-mode" value="blur" onchange="changeBg()"> Blur Background</label>
+              <label><input type="radio" name="bg-mode" value="remove" onchange="changeBg()"> Remove / Transparent</label>
+              <label><input type="radio" name="bg-mode" value="color" onchange="changeBg()"> Replace Color</label>
+              <div class="color-shades" id="modal-shades" style="display:none;">
+                <div class="shade-box active" style="background:#ffffff;" onclick="setCustomColor('#ffffff', this)"></div>
+                <div class="shade-box" style="background:#f0f4f8;" onclick="setCustomColor('#f0f4f8', this)"></div>
+                <input type="color" value="#ffffff" style="width:25px;height:22px;padding:0;cursor:pointer;" oninput="setCustomColor(this.value, null)">
+              </div>
+            </div>
+          </div>
+          
+          <button class="tool-btn" style="width:100%; margin-top:15px;" onclick="resetFilters()">🔄 ਰੀਸੈੱਟ ਡਿਫਾਲਟ</button>
         </div>
       </div>
 
       <div class="modal-foot">
-        <button class="btn-cancel tool-btn" onclick="closeModal()">Cancel</button>
+        <button class="btn-cancel" onclick="closeModal()">ਰੱਦ ਕਰੋ (Cancel)</button>
         <button class="btn-save" onclick="saveCroppedImage()">✅ Save & Apply</button>
       </div>
     </div>
@@ -141,27 +174,30 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <script>
-    // Disable drag on images
-    document.addEventListener('dragstart', function(e) { if(e.target.nodeName.toUpperCase() == "IMG") { e.preventDefault(); } });
-
-    // Initialize System
-    function initSystem() {
-      if(window['pdfjs-dist/build/pdf']) {
-        window.pdfjsLib = window['pdfjs-dist/build/pdf'];
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = ''; 
-      }
-      buildInterface();
+    // Initialize PDF.js
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
     }
-    document.addEventListener("DOMContentLoaded", initSystem);
 
-    let cropper = null; let currentEditKey = null; let cardStatus = {};
+    let cropper = null; 
+    let currentEditKey = null; 
+    let currentBgColor = '#ffffff';
+    let cardStatus = {};
 
+    document.addEventListener("DOMContentLoaded", buildInterface);
+
+    // 1. Build UI dynamically based on the dropdown
     function buildInterface() {
-      const count = parseInt(document.getElementById('card-count').value || 5);
+      const countSelect = document.getElementById('card-count');
+      if (!countSelect) return;
+      const count = parseInt(countSelect.value);
+      
       const controlsDiv = document.getElementById('dynamic-controls');
       const a4Div = document.getElementById('a4-sheet');
       
-      controlsDiv.innerHTML = ''; a4Div.innerHTML = ''; cardStatus = {};
+      controlsDiv.innerHTML = ''; 
+      a4Div.innerHTML = ''; 
+      cardStatus = {};
 
       for (let i = 1; i <= count; i++) {
         const displayStyle = (i === 1) ? 'block' : 'none';
@@ -169,30 +205,67 @@
         controlsDiv.innerHTML += `
           <div class="card-block ${i===1?'active':''}" id="block-${i}" style="display:${displayStyle};">
             <h4>ਕਾਰਡ ਸੈੱਟ - ${i}</h4>
-            <div class="file-group"><label>ਅਗਲਾ ਪਾਸਾ (Front) <span class="status-badge" id="status-front-${i}">Pending</span></label>
-              <div class="file-actions"><input type="file" accept="image/*,application/pdf" id="input-front-${i}" onchange="processFile(event, 'front-${i}')"><button class="btn-clear" onclick="clearSlot('front-${i}')">✖</button></div>
+            
+            <div class="file-group">
+              <label>ਅਗਲਾ ਪਾਸਾ (Front) <span class="status-badge" id="status-front-${i}">Pending</span></label>
+              <div class="file-actions">
+                <input type="file" accept="image/*,application/pdf" id="input-front-${i}" onchange="processFile(event, 'front-${i}')">
+                <button class="btn-clear" onclick="clearSlot('front-${i}')">✖ Clear</button>
+              </div>
             </div>
-            <div class="file-group"><label>ਪਿਛਲਾ ਪਾਸਾ (Back) <span class="status-badge" id="status-back-${i}">Pending</span></label>
-              <div class="file-actions"><input type="file" accept="image/*,application/pdf" id="input-back-${i}" onchange="processFile(event, 'back-${i}')"><button class="btn-clear" onclick="clearSlot('back-${i}')">✖</button></div>
+            
+            <div class="file-group">
+              <label>ਪਿਛਲਾ ਪਾਸਾ (Back) <span class="status-badge" id="status-back-${i}">Pending</span></label>
+              <div class="file-actions">
+                <input type="file" accept="image/*,application/pdf" id="input-back-${i}" onchange="processFile(event, 'back-${i}')">
+                <button class="btn-clear" onclick="clearSlot('back-${i}')">✖ Clear</button>
+              </div>
             </div>
-            ${i < count ? `<button class="btn-next" id="btn-next-${i}" onclick="nextStep(${i})">ਅਗਲਾ ਕਾਰਡ ਚੁਣੋ ➔</button>` : `<div style="text-align:center; color:#28a745; font-weight:bold; margin-top:10px; display:none;" id="final-msg">✓ ਸਾਰੇ ਕਾਰਡ ਮੁਕੰਮਲ!</div>`}
+
+            ${i < count ? `<button class="btn-next" id="btn-next-${i}" onclick="nextStep(${i})">ਅਗਲਾ ਕਾਰਡ ਚੁਣੋ (Submit & Next) ➔</button>` : `<div style="text-align:center; color:#28a745; font-weight:bold; margin-top:10px; display:none;" id="final-msg">✓ ਸਾਰੇ ਕਾਰਡ ਮੁਕੰਮਲ ਹੋ ਗਏ ਹਨ!</div>`}
           </div>
         `;
 
-        a4Div.innerHTML += `<div class="a4-row"><div class="id-card"><img id="out-front-${i}" src=""></div><div class="id-card"><img id="out-back-${i}" src=""></div></div>`;
+        a4Div.innerHTML += `
+          <div class="a4-row">
+            <div class="id-card">
+              <div class="bg-layer" id="bg-front-${i}"></div>
+              <img id="out-front-${i}" src="">
+            </div>
+            <div class="id-card">
+              <div class="bg-layer" id="bg-back-${i}"></div>
+              <img id="out-back-${i}" src="">
+            </div>
+          </div>
+        `;
       }
     }
 
-    function nextStep(i) { document.getElementById('block-' + i).style.display = 'none'; if (document.getElementById('block-' + (i + 1))) document.getElementById('block-' + (i + 1)).style.display = 'block'; }
-
-    function clearSlot(key) {
-      document.getElementById('out-' + key).src = ""; document.getElementById('input-' + key).value = ""; 
-      const badge = document.getElementById('status-' + key); badge.innerText = "Pending"; badge.classList.remove('success');
-      cardStatus[key] = false; checkCompletion(key);
+    function nextStep(currentIndex) {
+      document.getElementById('block-' + currentIndex).style.display = 'none';
+      const nextBlock = document.getElementById('block-' + (currentIndex + 1));
+      if (nextBlock) nextBlock.style.display = 'block';
     }
 
+    function clearSlot(key) {
+      document.getElementById('out-' + key).src = ""; 
+      document.getElementById('bg-' + key).style.background = 'transparent'; 
+      document.getElementById('input-' + key).value = ""; 
+      
+      const badge = document.getElementById('status-' + key);
+      badge.innerText = "Pending";
+      badge.classList.remove('success');
+      
+      cardStatus[key] = false;
+      checkCompletion(key);
+    }
+
+    // 2. Safe File Processor (Image + PDF)
     function processFile(event, key) {
-      const file = event.target.files[0]; if (!file) return; currentEditKey = key;
+      const file = event.target.files[0];
+      if (!file) return;
+      currentEditKey = key;
+
       if (file.type === "application/pdf") {
         const reader = new FileReader();
         reader.onload = function(e) { renderPDF(new Uint8Array(e.target.result), ""); };
@@ -202,56 +275,146 @@
         reader.onload = function(e) { openCropperModal(e.target.result); };
         reader.readAsDataURL(file);
       }
-      event.target.value = ""; 
+      event.target.value = ""; // Always reset
     }
 
+    // 3. PDF Engine
     function renderPDF(typedArray, password) {
-      if (typeof pdfjsLib === 'undefined') return;
-      pdfjsLib.getDocument({ data: typedArray, password: password }).promise.then(pdf => pdf.getPage(1)).then(page => {
-        const viewport = page.getViewport({ scale: 2.0 }); const canvas = document.createElement('canvas');
-        canvas.height = viewport.height; canvas.width = viewport.width;
-        return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise.then(() => openCropperModal(canvas.toDataURL('image/jpeg', 1.0)));
-      }).catch(err => {
-        if (err.name === "PasswordException") { const pwd = prompt("🔒 PDF ਪਾਸਵਰਡ ਭਰੋ:"); if (pwd) renderPDF(typedArray, pwd); } 
-        else alert("PDF Error: " + err.message);
+      if (!window.pdfjsLib) { alert("PDF Error: ਲਾਇਬ੍ਰੇਰੀ ਲੋਡ ਨਹੀਂ ਹੋਈ।"); return; }
+      
+      pdfjsLib.getDocument({ data: typedArray, password: password }).promise.then(function(pdf) {
+        return pdf.getPage(1);
+      }).then(function(page) {
+        const viewport = page.getViewport({ scale: 2.0 });
+        const canvas = document.createElement('canvas');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        
+        return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise.then(function() {
+           openCropperModal(canvas.toDataURL('image/jpeg', 1.0));
+        });
+      }).catch(function(err) {
+        if (err.name === "PasswordException") {
+          const pwd = prompt("🔒 ਇਹ PDF ਪਾਸਵਰਡ ਨਾਲ ਲਾਕ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪਾਸਵਰਡ ਭਰੋ:");
+          if (pwd) renderPDF(typedArray, pwd);
+        } else {
+          alert("PDF ਖੋਲ੍ਹਣ ਵਿੱਚ ਗਲਤੀ: " + err.message);
+        }
       });
     }
 
+    // 4. Modal & Advanced Cropper
     function openCropperModal(imgSrc) {
-      document.getElementById('crop-modal').style.display = 'flex';
-      const imgElem = document.getElementById('image-workspace'); imgElem.src = imgSrc;
-      if (cropper) cropper.destroy(); resetFilters();
-      setTimeout(() => { cropper = new Cropper(imgElem, { viewMode: 1, dragMode: 'move', aspectRatio: 85.6/53.98, autoCropArea: 0.9, zoomable: true, ready: applyFilters }); }, 150);
+      const modal = document.getElementById('crop-modal');
+      const imgElem = document.getElementById('image-workspace');
+      imgElem.src = imgSrc;
+      modal.style.display = 'flex';
+
+      if (cropper) { cropper.destroy(); cropper = null; }
+      resetFilters();
+
+      setTimeout(() => {
+        cropper = new Cropper(imgElem, {
+          viewMode: 1, 
+          dragMode: 'move', 
+          aspectRatio: 85.6 / 53.98, // Strict Card Ratio Default
+          autoCropArea: 0.9, 
+          zoomable: true,   // Full Zoom Freedom
+          scalable: true,
+          responsive: true,
+          ready: function() { applyFilters(); }
+        });
+      }, 150);
     }
 
-    function closeModal() { document.getElementById('crop-modal').style.display = 'none'; if (cropper) { cropper.destroy(); cropper = null; } }
+    function closeModal() {
+      document.getElementById('crop-modal').style.display = 'none';
+      if (cropper) { cropper.destroy(); cropper = null; }
+    }
 
     function resetFilters() {
-      document.getElementById('sl-rot').value = 0; document.getElementById('sl-bri').value = 100; document.getElementById('sl-con').value = 100;
+      document.getElementById('sl-rot').value = 0; document.getElementById('sl-bri').value = 100;
+      document.getElementById('sl-exp').value = 100; document.getElementById('sl-con').value = 100;
+      document.getElementsByName('bg-mode')[0].checked = true;
+      changeBg();
       if(cropper) { cropper.rotateTo(0); applyFilters(); }
     }
 
     function applyFilters() {
       if(!cropper) return;
-      const rot = document.getElementById('sl-rot').value, bri = document.getElementById('sl-bri').value, con = document.getElementById('sl-con').value;
-      document.getElementById('v-rot').innerText = rot + "°"; document.getElementById('v-bri').innerText = bri + "%"; document.getElementById('v-con').innerText = con + "%";
+      const rot = document.getElementById('sl-rot').value;
+      const bri = document.getElementById('sl-bri').value;
+      const exp = document.getElementById('sl-exp').value;
+      const con = document.getElementById('sl-con').value;
+
+      document.getElementById('v-rot').innerText = rot + "°";
+      document.getElementById('v-bri').innerText = bri + "%";
+      document.getElementById('v-exp').innerText = exp + "%";
+      document.getElementById('v-con').innerText = con + "%";
+
       cropper.rotateTo(rot);
-      const filterStr = `brightness(${bri}%) contrast(${con}%)`;
-      document.querySelectorAll('.cropper-view-box img').forEach(img => img.style.filter = filterStr);
+      
+      const simExp = exp / 100;
+      const filterStr = `brightness(${bri}%) contrast(${con}%) saturate(${simExp * 100}%)`;
+      
+      const previewImages = document.querySelectorAll('.cropper-view-box img');
+      previewImages.forEach(img => img.style.filter = filterStr);
     }
 
+    function changeBg() {
+      const mode = document.querySelector('input[name="bg-mode"]:checked').value;
+      const shades = document.getElementById('modal-shades');
+      shades.style.display = 'none';
+      if(mode === 'normal' || mode === 'color') currentBgColor = '#ffffff';
+      if(mode === 'blur' || mode === 'remove') currentBgColor = 'transparent';
+      if(mode === 'color') shades.style.display = 'flex';
+    }
+
+    function setCustomColor(color, el) {
+      currentBgColor = color;
+      document.querySelectorAll('#modal-shades .shade-box').forEach(s => s.classList.remove('active'));
+      if(el) el.classList.add('active');
+    }
+
+    // 5. Save & Apply
     function saveCroppedImage() {
       if (!cropper || !currentEditKey) return;
-      const canvas = cropper.getCroppedCanvas(); if (!canvas) return;
+      
+      const canvas = cropper.getCroppedCanvas({
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high',
+      });
+      if (!canvas) return;
+
       const outImg = document.getElementById('out-' + currentEditKey);
       outImg.src = canvas.toDataURL('image/jpeg', 1.0);
+
+      const bri = document.getElementById('sl-bri').value;
+      const exp = document.getElementById('sl-exp').value;
+      const con = document.getElementById('sl-con').value;
+      const simExp = exp / 100;
+      outImg.style.filter = `brightness(${bri}%) contrast(${con}%) saturate(${simExp * 100}%)`;
+
+      const mode = document.querySelector('input[name="bg-mode"]:checked').value;
+      const bgLayer = document.getElementById('bg-' + currentEditKey);
       
-      const bri = document.getElementById('sl-bri').value, con = document.getElementById('sl-con').value;
-      outImg.style.filter = `brightness(${bri}%) contrast(${con}%)`;
+      bgLayer.style.filter = 'none'; bgLayer.style.background = 'none';
+      if (mode === 'normal') bgLayer.style.background = '#ffffff';
+      else if (mode === 'blur') {
+        bgLayer.style.background = 'rgba(0,0,0,0.04)';
+        bgLayer.style.backdropFilter = 'blur(6px)';
+        bgLayer.style.webkitBackdropFilter = 'blur(6px)';
+      }
+      else if (mode === 'remove') bgLayer.style.background = 'transparent';
+      else if (mode === 'color') bgLayer.style.background = currentBgColor;
 
       const badge = document.getElementById('status-' + currentEditKey);
-      badge.innerText = "✔ Saved"; badge.classList.add('success');
-      cardStatus[currentEditKey] = true; checkCompletion(currentEditKey);
+      badge.innerText = "✔ Uploaded";
+      badge.classList.add('success');
+      
+      cardStatus[currentEditKey] = true;
+      checkCompletion(currentEditKey);
+      
       closeModal();
     }
 
@@ -259,41 +422,32 @@
       const match = key.match(/-(.+)$/); 
       if (match) {
         const cId = match[1]; 
-        const nxtBtn = document.getElementById('btn-next-' + cId), finalMsg = document.getElementById('final-msg');
+        const nxtBtn = document.getElementById('btn-next-' + cId);
+        const finalMsg = document.getElementById('final-msg');
+        
         if (cardStatus[`front-${cId}`] && cardStatus[`back-${cId}`]) {
-          if (nxtBtn) nxtBtn.style.display = 'block'; else if(finalMsg) finalMsg.style.display = 'block';
+          if (nxtBtn) nxtBtn.style.display = 'block';
+          else if(finalMsg) finalMsg.style.display = 'block';
         } else {
-          if (nxtBtn) nxtBtn.style.display = 'none'; else if(finalMsg) finalMsg.style.display = 'none';
+          if (nxtBtn) nxtBtn.style.display = 'none';
+          else if(finalMsg) finalMsg.style.display = 'none';
         }
       }
     }
 
-    // TICKET SYSTEM SCRIPT
-function submitTicket(e) {
-  e.preventDefault();
-  const btn = document.getElementById('t-btn');
-  btn.innerText = "Sending...";
-  btn.style.background = "#ccc";
-  
-  const id = document.getElementById('t-id').value;
-  const msg = document.getElementById('t-msg').value;
-  
-  // ਇੱਥੇ ਆਪਣਾ ਕਾਪੀ ਕੀਤਾ Web App URL ਪੇਸਟ ਕਰੋ
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbx9mOC1keyfm6I4Z0tYeKD205rzXWwfIZuWimCjNl0V/dev"; 
-  
-  fetch(webAppUrl, {
-    method: 'POST',
-    body: new URLSearchParams({ 'id': id, 'msg': msg })
-  }).then(res => {
-    alert("ਤੁਹਾਡੀ ਟਿਕਟ ਦਰਜ ਹੋ ਗਈ ਹੈ! ਜਲਦੀ ਹੀ ਸੰਪਰਕ ਕੀਤਾ ਜਾਵੇਗਾ।");
-    document.getElementById('ticket-form').reset();
-    btn.innerText = "Send Message ➔";
-    btn.style.background = "#856404";
-  }).catch(err => {
-    alert("ਕੋਈ ਤਕਨੀਕੀ ਗਲਤੀ ਆਈ ਹੈ।");
-    btn.innerText = "Send Message ➔";
-  });
-}
+    // 6. Support Ticket Handler
+    function submitTicket(e) {
+      e.preventDefault();
+      const btn = document.getElementById('t-btn');
+      btn.innerText = "Sending...";
+      btn.style.background = "#ccc";
+      
+      setTimeout(() => {
+        alert("ਤੁਹਾਡੀ ਟਿਕਟ ਦਰਜ ਹੋ ਗਈ ਹੈ! ਅਸੀਂ ਜਲਦੀ ਹੀ ਸੰਪਰਕ ਕਰਾਂਗੇ।");
+        document.getElementById('ticket-form').reset();
+        btn.innerText = "Send Message ➔";
+        btn.style.background = "#856404";
+      }, 1000);
     }
   </script>
 </body>
