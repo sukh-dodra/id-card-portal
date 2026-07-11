@@ -7,23 +7,19 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
   
   <style>
-    /* Modern UI Variables */
     :root { --primary: #1e3a8a; --secondary: #f8f9fa; --accent: #28a745; --text: #333; --border: #dee2e6; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 15px; display: flex; gap: 15px; height: 100vh; box-sizing: border-box; overflow: hidden; user-select: none; }
     
-    /* Left Panel - Premium Look */
     .sidebar { width: 350px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: 100%; overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; }
     .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
     .header h2 { margin: 0; color: var(--primary); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
-    .header p { margin: 5px 0 0; font-size: 12px; color: #666; font-weight: bold; }
     
     .setup-box { background: var(--secondary); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; }
     .setup-box label { font-weight: bold; color: var(--text); display: block; margin-bottom: 8px; font-size: 14px; }
     .setup-box select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; cursor: pointer; outline: none; }
 
     .card-block { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; display: none; }
-    .card-block.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .card-block.active { display: block; }
     .card-block h4 { margin: 0 0 15px 0; color: var(--primary); font-size: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
     
     .file-group { margin-bottom: 15px; background: #fdfdfd; border: 1px solid #eee; padding: 10px; border-radius: 6px;}
@@ -37,7 +33,6 @@
     .btn-next { background: #17a2b8; color: white; border: none; padding: 12px; width: 100%; margin-top: 5px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; }
     .btn-print { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
 
-    /* Ticket Box */
     .ticket-box { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin-top: auto; }
     .ticket-box h4 { margin: 0 0 10px 0; color: #856404; font-size: 14px; }
     .ticket-box input, .ticket-box textarea { width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; font-family: inherit;}
@@ -57,7 +52,6 @@
     .modal-head { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; }
     .toolbar { background: #f8f9fa; padding: 10px 20px; border-bottom: 1px solid #dee2e6; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .tool-btn { background: white; border: 1px solid #ced4da; padding: 8px 15px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; color: #495057; }
-    .tool-btn:hover { background: #e2e6ea; }
     .modal-body { display: flex; height: 55vh; }
     .crop-container { width: 65%; background: #111; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
     .crop-container img { max-width: 100%; max-height: 100%; display: block; }
@@ -76,7 +70,6 @@
     .btn-save { background: var(--primary); color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
     .btn-cancel { background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-    /* Print Styles for Perfect A4 */
     @page { size: A4 portrait; margin: 0; }
     @media print {
       body { background: none; padding: 0; margin: 0; }
@@ -99,8 +92,11 @@
     <div class="setup-box">
       <label>ਕਿੰਨੇ ਆਈ.ਡੀ ਕਾਰਡ ਪ੍ਰਿੰਟ ਕਰਨੇ ਹਨ?</label>
       <select id="card-count" onchange="buildInterface()">
-        <option value="1">1 ਕਾਰਡ</option><option value="2">2 ਕਾਰਡ</option>
-        <option value="3">3 ਕਾਰਡ</option><option value="4">4 ਕਾਰਡ</option><option value="5" selected>5 ਕਾਰਡ</option>
+        <option value="1">1 ਕਾਰਡ</option>
+        <option value="2">2 ਕਾਰਡ</option>
+        <option value="3">3 ਕਾਰਡ</option>
+        <option value="4">4 ਕਾਰਡ</option>
+        <option value="5">5 ਕਾਰਡ</option>
       </select>
     </div>
 
@@ -133,7 +129,7 @@
         <button class="tool-btn" onclick="if(cropper) cropper.zoom(0.1)">🔍 Zoom In (+)</button>
         <button class="tool-btn" onclick="if(cropper) cropper.zoom(-0.1)">🔍 Zoom Out (-)</button>
         <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(NaN)" style="margin-left:auto; background:#d1ecf1;">📐 Free Crop (ਆਪਣੀ ਮਰਜ਼ੀ)</button>
-        <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(85.6/53.98)" style="background:#d4edda; border-color:#c3e6cb;">💳 ID Card Size</button>
+        <button class="tool-btn" onclick="if(cropper) cropper.setAspectRatio(85.6/53.98)" style="background:#d4edda;">💳 ID Card Size</button>
       </div>
 
       <div class="modal-body">
@@ -170,76 +166,93 @@
     </div>
   </div>
 
+  <script>
+    let cardStatus = {};
+    
+    function buildInterface() {
+      try {
+        let countBox = document.getElementById('card-count');
+        if (!countBox) {
+            countBox = { value: "5" }; // Default 5 if missing
+        }
+        
+        const count = parseInt(countBox.value);
+        const controlsDiv = document.getElementById('dynamic-controls');
+        const a4Div = document.getElementById('a4-sheet');
+        
+        controlsDiv.innerHTML = ''; 
+        a4Div.innerHTML = ''; 
+        cardStatus = {};
+
+        for (let i = 1; i <= count; i++) {
+          const displayStyle = (i === 1) ? 'block' : 'none';
+          
+          controlsDiv.innerHTML += `
+            <div class="card-block ${i===1?'active':''}" id="block-${i}" style="display:${displayStyle};">
+              <h4>ਕਾਰਡ ਸੈੱਟ - ${i}</h4>
+              
+              <div class="file-group">
+                <label>ਅਗਲਾ ਪਾਸਾ (Front) <span class="status-badge" id="status-front-${i}">Pending</span></label>
+                <div class="file-actions">
+                  <input type="file" accept="image/*,application/pdf" id="input-front-${i}" onchange="processFile(event, 'front-${i}')">
+                  <button class="btn-clear" onclick="clearSlot('front-${i}')">✖ Clear</button>
+                </div>
+              </div>
+              
+              <div class="file-group">
+                <label>ਪਿਛਲਾ ਪਾਸਾ (Back) <span class="status-badge" id="status-back-${i}">Pending</span></label>
+                <div class="file-actions">
+                  <input type="file" accept="image/*,application/pdf" id="input-back-${i}" onchange="processFile(event, 'back-${i}')">
+                  <button class="btn-clear" onclick="clearSlot('back-${i}')">✖ Clear</button>
+                </div>
+              </div>
+
+              ${i < count ? `<button class="btn-next" id="btn-next-${i}" onclick="nextStep(${i})">ਅਗਲਾ ਕਾਰਡ ਚੁਣੋ (Submit & Next) ➔</button>` : `<div style="text-align:center; color:#28a745; font-weight:bold; margin-top:10px; display:none;" id="final-msg">✓ ਸਾਰੇ ਕਾਰਡ ਮੁਕੰਮਲ ਹੋ ਗਏ ਹਨ!</div>`}
+            </div>
+          `;
+
+          a4Div.innerHTML += `
+            <div class="a4-row">
+              <div class="id-card">
+                <div class="bg-layer" id="bg-front-${i}"></div>
+                <img id="out-front-${i}" src="">
+              </div>
+              <div class="id-card">
+                <div class="bg-layer" id="bg-back-${i}"></div>
+                <img id="out-back-${i}" src="">
+              </div>
+            </div>
+          `;
+        }
+        
+        // Ensure default count is 5 on load
+        if(document.getElementById('card-count').value !== count.toString()){
+             document.getElementById('card-count').value = count.toString();
+        }
+
+      } catch (err) {
+        alert("UI ਬਣਾਉਣ ਵਿੱਚ ਸਮੱਸਿਆ ਆਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪੇਜ Refresh ਕਰੋ।");
+      }
+    }
+
+    // Run UI Builder Immediately
+    document.addEventListener("DOMContentLoaded", buildInterface);
+    
+    // Fallback if DOMContentLoaded is missed
+    setTimeout(() => {
+        if(document.getElementById('dynamic-controls').innerHTML === '') {
+            buildInterface();
+        }
+    }, 500);
+  </script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <script>
-    // Initialize PDF.js
-    if (window.pdfjsLib) {
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-    }
-
     let cropper = null; 
     let currentEditKey = null; 
     let currentBgColor = '#ffffff';
-    let cardStatus = {};
-
-    document.addEventListener("DOMContentLoaded", buildInterface);
-
-    // 1. Build UI dynamically based on the dropdown
-    function buildInterface() {
-      const countSelect = document.getElementById('card-count');
-      if (!countSelect) return;
-      const count = parseInt(countSelect.value);
-      
-      const controlsDiv = document.getElementById('dynamic-controls');
-      const a4Div = document.getElementById('a4-sheet');
-      
-      controlsDiv.innerHTML = ''; 
-      a4Div.innerHTML = ''; 
-      cardStatus = {};
-
-      for (let i = 1; i <= count; i++) {
-        const displayStyle = (i === 1) ? 'block' : 'none';
-        
-        controlsDiv.innerHTML += `
-          <div class="card-block ${i===1?'active':''}" id="block-${i}" style="display:${displayStyle};">
-            <h4>ਕਾਰਡ ਸੈੱਟ - ${i}</h4>
-            
-            <div class="file-group">
-              <label>ਅਗਲਾ ਪਾਸਾ (Front) <span class="status-badge" id="status-front-${i}">Pending</span></label>
-              <div class="file-actions">
-                <input type="file" accept="image/*,application/pdf" id="input-front-${i}" onchange="processFile(event, 'front-${i}')">
-                <button class="btn-clear" onclick="clearSlot('front-${i}')">✖ Clear</button>
-              </div>
-            </div>
-            
-            <div class="file-group">
-              <label>ਪਿਛਲਾ ਪਾਸਾ (Back) <span class="status-badge" id="status-back-${i}">Pending</span></label>
-              <div class="file-actions">
-                <input type="file" accept="image/*,application/pdf" id="input-back-${i}" onchange="processFile(event, 'back-${i}')">
-                <button class="btn-clear" onclick="clearSlot('back-${i}')">✖ Clear</button>
-              </div>
-            </div>
-
-            ${i < count ? `<button class="btn-next" id="btn-next-${i}" onclick="nextStep(${i})">ਅਗਲਾ ਕਾਰਡ ਚੁਣੋ (Submit & Next) ➔</button>` : `<div style="text-align:center; color:#28a745; font-weight:bold; margin-top:10px; display:none;" id="final-msg">✓ ਸਾਰੇ ਕਾਰਡ ਮੁਕੰਮਲ ਹੋ ਗਏ ਹਨ!</div>`}
-          </div>
-        `;
-
-        a4Div.innerHTML += `
-          <div class="a4-row">
-            <div class="id-card">
-              <div class="bg-layer" id="bg-front-${i}"></div>
-              <img id="out-front-${i}" src="">
-            </div>
-            <div class="id-card">
-              <div class="bg-layer" id="bg-back-${i}"></div>
-              <img id="out-back-${i}" src="">
-            </div>
-          </div>
-        `;
-      }
-    }
 
     function nextStep(currentIndex) {
       document.getElementById('block-' + currentIndex).style.display = 'none';
@@ -260,29 +273,38 @@
       checkCompletion(key);
     }
 
-    // 2. Safe File Processor (Image + PDF)
     function processFile(event, key) {
       const file = event.target.files[0];
       if (!file) return;
       currentEditKey = key;
 
-      if (file.type === "application/pdf") {
-        const reader = new FileReader();
-        reader.onload = function(e) { renderPDF(new Uint8Array(e.target.result), ""); };
-        reader.readAsArrayBuffer(file);
-      } else {
-        const reader = new FileReader();
-        reader.onload = function(e) { openCropperModal(e.target.result); };
-        reader.readAsDataURL(file);
+      try {
+        if (file.type === "application/pdf") {
+          const reader = new FileReader();
+          reader.onload = function(e) { renderPDF(new Uint8Array(e.target.result), ""); };
+          reader.readAsArrayBuffer(file);
+        } else {
+          const reader = new FileReader();
+          reader.onload = function(e) { openCropperModal(e.target.result); };
+          reader.readAsDataURL(file);
+        }
+      } catch(err) {
+        alert("ਫਾਈਲ ਲੋਡ ਕਰਨ ਵਿੱਚ ਸਮੱਸਿਆ: " + err.message);
+      } finally {
+        event.target.value = ""; 
       }
-      event.target.value = ""; // Always reset
     }
 
-    // 3. PDF Engine
-    function renderPDF(typedArray, password) {
-      if (!window.pdfjsLib) { alert("PDF Error: ਲਾਇਬ੍ਰੇਰੀ ਲੋਡ ਨਹੀਂ ਹੋਈ।"); return; }
+    function renderPDF(typedArray, passwordAttempt) {
+      if (typeof pdfjsLib === 'undefined') {
+        alert("PDF ਲਾਇਬ੍ਰੇਰੀ ਅਜੇ ਲੋਡ ਹੋ ਰਹੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਸਕਿੰਟਾਂ ਬਾਅਦ ਦੁਬਾਰਾ ਫਾਈਲ ਚੁਣੋ।");
+        return;
+      }
       
-      pdfjsLib.getDocument({ data: typedArray, password: password }).promise.then(function(pdf) {
+      // Load Worker safely
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+      
+      pdfjsLib.getDocument({ data: typedArray, password: passwordAttempt }).promise.then(function(pdf) {
         return pdf.getPage(1);
       }).then(function(page) {
         const viewport = page.getViewport({ scale: 2.0 });
@@ -303,7 +325,6 @@
       });
     }
 
-    // 4. Modal & Advanced Cropper
     function openCropperModal(imgSrc) {
       const modal = document.getElementById('crop-modal');
       const imgElem = document.getElementById('image-workspace');
@@ -317,9 +338,9 @@
         cropper = new Cropper(imgElem, {
           viewMode: 1, 
           dragMode: 'move', 
-          aspectRatio: 85.6 / 53.98, // Strict Card Ratio Default
+          aspectRatio: 85.6 / 53.98, 
           autoCropArea: 0.9, 
-          zoomable: true,   // Full Zoom Freedom
+          zoomable: true,   
           scalable: true,
           responsive: true,
           ready: function() { applyFilters(); }
@@ -376,14 +397,10 @@
       if(el) el.classList.add('active');
     }
 
-    // 5. Save & Apply
     function saveCroppedImage() {
       if (!cropper || !currentEditKey) return;
       
-      const canvas = cropper.getCroppedCanvas({
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high',
-      });
+      const canvas = cropper.getCroppedCanvas();
       if (!canvas) return;
 
       const outImg = document.getElementById('out-' + currentEditKey);
@@ -435,7 +452,6 @@
       }
     }
 
-    // 6. Support Ticket Handler
     function submitTicket(e) {
       e.preventDefault();
       const btn = document.getElementById('t-btn');
